@@ -1,9 +1,8 @@
-# install-kubernetes-on-ubuntu
+# Install-kubernetes-on-ubuntu
 
 IP configuration:
+vi /etc/netplan/00-installer-config.yaml
 
-sujit@master:~$ cat /etc/netplan/00-installer-config.yaml
-# This is the network config written by 'subiquity'
 network:
   ethernets:
     ens33:
