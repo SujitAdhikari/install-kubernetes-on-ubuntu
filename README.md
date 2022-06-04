@@ -86,10 +86,12 @@ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
 sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
 sudo apt-get install kubeadm kubelet kubectl -y
 ```
-
-# rm -f /etc/containerd/config.toml
-# systemctl restart contaninerd
-initializes a Kubernetes control-plane node
+**Restart containerd:**
+```
+$ rm -f /etc/containerd/config.toml
+$ systemctl restart contaninerd
+```
+Initializes a Kubernetes control-plane node
 ----
 root@master:~# kubeadm init 
 
@@ -100,23 +102,27 @@ CNI Plugin:
 ---
 - Every node have kube proxy, CNI Plugin is like router, CNI plugin will provide IP. 
 - Weave net not working, need to check:
-  kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
-
+```
+kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+```
 Install calico as CNI Plugin:
 ----
+```
 curl https://docs.projectcalico.org/manifests/calico.yaml -O
 kubectl apply -f calico.yaml
-
+```
 Prepare worker node:
 ---
   a. execute command: sh install.sh #don't execute command kubeadm init for workernode
   b. Execute join command
   c. Print Join command from master node:
-       kubeadm token create  --print-join-command
-       Execute Join command 
-  
+   ```
+   kubeadm token create  --print-join-command
+   Execute Join command 
+  ```
 Basic command:
 ---
+```
 kubectl get nodes
 kubectl get pods --all-namespaces
 kubectl get pods -n kube-system
@@ -126,26 +132,27 @@ kubectl run nginx --image=nginx
 kubectl get pods -o wide # check pods running on which node
 
 sudo apt-mark hold kubelet kubeadm kubectl  #Lock the version, So it will not udate if we run apt upgrade
-
+```
 Troubleshooting:
 ---
 #if need to reset for any error on master node.>>
+```
 kubeadm reset -f
 rm -rf /etc/kubernetes/
 rm -fr /var/lib/kubelet/
-
+```
 Remove CNI Plugin:
 ---
-Remove Weave:
---------------
-kubectl delete -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+- kubectl delete -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+
 Need to check below 4 line:
 ---------------------------
+```
 rm -f /opt/cni/bin/weave*
 rm -f /etc/cni/net.d/*weave*
 iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
 ipvsadm -C
 
-
 kubectl describe pods weave-net-9h9ll -n kube-system
 kubectl logs <weave-pod-name-as-above > -n kube-system weave-npc
+```
