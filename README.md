@@ -96,17 +96,19 @@ root@master:~# kubeadm init
 - Login with normal user execute provided command.
 - Notedown join command for workernode
 
-#CNI Plugin: Every node have kube proxy, CNI Plugin is like router, CNI plugin will provide IP. 
-#Core DNS is not getting IP so it is not ready state. 
-
-Weave net not working, need to check:
-kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+CNI Plugin:
+---
+- Every node have kube proxy, CNI Plugin is like router, CNI plugin will provide IP. 
+- Weave net not working, need to check:
+  kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
 
 Install calico as CNI Plugin:
+----
 curl https://docs.projectcalico.org/manifests/calico.yaml -O
 kubectl apply -f calico.yaml
 
-2. Prepare worker node:
+Prepare worker node:
+---
   a. execute command: sh install.sh #don't execute command kubeadm init for workernode
   b. Execute join command
   c. Print Join command from master node:
@@ -114,24 +116,26 @@ kubectl apply -f calico.yaml
        Execute Join command 
   
 Basic command:
- 
+---
 kubectl get nodes
 kubectl get pods --all-namespaces
 kubectl get pods -n kube-system
 
-Pods:
+#Pods:
 kubectl run nginx --image=nginx
 kubectl get pods -o wide # check pods running on which node
 
 sudo apt-mark hold kubelet kubeadm kubectl  #Lock the version, So it will not udate if we run apt upgrade
 
 Troubleshooting:
+---
 #if need to reset for any error on master node.>>
 kubeadm reset -f
 rm -rf /etc/kubernetes/
 rm -fr /var/lib/kubelet/
 
 Remove CNI Plugin:
+---
 Remove Weave:
 --------------
 kubectl delete -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
@@ -149,7 +153,7 @@ kubectl get svc
 kebectl delete svc pod-name
 
 Cluster	IP:
------------
+------
 kubectl expose pod nginx --name=web-cip --type=ClusterIP --port=80
 kubectl get svc
 kubectl get pods -o wide # podip
@@ -157,6 +161,7 @@ kubectl describe svc web-cip  #endpoint is all pods ip
 kubectl describe pods nginx # Labels
 
 Networks:
+---
 Pod Network
 Service Network
 Node Network
@@ -189,7 +194,8 @@ kubectl create deploy nginx --image=nginx
 kubectl get rs
 kubectl delete deploy nginx
 
-Service : Establish communication in internal cluster and external 
+Service : 
+	Establish communication in internal cluster and external 
 Service Type: 
 	Cluster IP: Within cluster able to communicate like app pod to db pod>> etc/k8s/manifests/kube-apiserver.yml
 	Node Port: Run on node(server) port from 30000+, will listen same port on every node, We will unable to set dns name here
