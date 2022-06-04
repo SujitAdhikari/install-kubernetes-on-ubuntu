@@ -1,8 +1,9 @@
 # Install-kubernetes-on-ubuntu
 
-IP configuration:
-vi /etc/netplan/00-installer-config.yaml
-
+IP configuration: 
+- vi /etc/netplan/00-installer-config.yaml 
+```
+# This is the network config written by 'subiquity'
 network:
   ethernets:
     ens33:
@@ -11,34 +12,37 @@ network:
       gateway4: 192.168.10.100
       nameservers:
         addresses: [192.168.10.100]
-
+```
 ### Command active network
 $ netplan apply
 
 Set Hostname:
-master: hostnamectl set-hostname master.example.com
-worker1: hostnamectl set-hostname worker1.example.com
-worker2: hostnamectl set-hostname worker3.example.com
-worker3: hostnamectl set-hostname worker3.example.com
+- master: hostnamectl set-hostname master.example.com
+- worker1: hostnamectl set-hostname worker1.example.com
+- worker2: hostnamectl set-hostname worker3.example.com
+- worker3: hostnamectl set-hostname worker3.example.com
 
 Hosts file entry:
 -------------------
 vim /etc/hosts
+```
 192.168.10.200 master.example.com master
 192.168.10.201 worker1.example.com worker1
 192.168.10.202 worker3.example.com worker2
 192.168.10.203 worker3.example.com worker3
-
-##Permanently disable swap space from fstab: 
+```
+Permanently disable swap space from fstab:
+------------
 #/swap.img      none    swap    sw      0       0
 
-##runtime not recommended 
+Disable runtime which is not recommended
+-----
 swapoff -a #runtime 
 
 Master Node Prepare:
 ----------------------
 ##Run below Script>>sh install.sh:
-
+```
 script:
 ---
 #!/bin/sh
@@ -81,13 +85,13 @@ systemctl daemon-reload
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
 sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
 sudo apt-get install kubeadm kubelet kubectl -y
----
+```
 
 # rm -f /etc/containerd/config.toml
 # systemctl restart contaninerd
-
+initializes a Kubernetes control-plane node
+----
 root@master:~# kubeadm init 
-
 
 - Login with normal user execute provided command.
 - Notedown join command for workernode
